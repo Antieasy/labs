@@ -20,6 +20,8 @@ dd if=/dev/XXX of=/dev/YYY| копирование одного раздела �
 lsblk | информация о дисках
 sfdisk -d /dev/XXXX  sfdisk /dev/YYY | скопировать таблицу разделов с одного диска на другой
 mdadm --manage /dev/md0 --add /dev/YYY | создать raid массив (сейчас это md0)
+mdadm --grow /dev/md63 --size=max | изменить размер raida на max
+mkfs.ext4 /dev/mapper/data-var_log | форматирование раздела в файловую систему ext4
 
 
 **Данная работа состоит из 3х частей:** <br>
@@ -116,4 +118,38 @@ Cкопировали таблицу разделов со старого дис
 
 ![20](https://raw.githubusercontent.com/Antieasy/labs/master/lab2/img/26_%D1%83%D0%B2%D0%B5%D0%BB%D0%B8%D1%87%D0%B8%D0%BB%D0%B8%20%D1%80%D0%B0%D0%B7%D0%BC%D0%B5%D1%80%20%D1%80%D0%B0%D0%B7%D0%B4%D0%B5%D0%BB%D0%B0.PNG "up gb") <br>
 
+добавим новый диск(ssd5) к текущему raid массиву. <br>
 
+![21](https://raw.githubusercontent.com/Antieasy/labs/master/lab2/img/27_2%20%D1%80%D0%B0%D0%B7%D0%BC%D0%B5%D1%87%D0%B5%D0%BD%D0%BD%D1%8B%D1%85%20%D0%BC%D0%B0%D1%81%D1%81%D0%B8%D0%B2%D0%B0%20%D0%BD%D0%BE%20%D0%BE%D0%B1%D0%B0%20%D1%81%20%D1%80%D0%B0%D0%B7%D0%BD%D0%BE%D0%B9%20%D0%BF%D0%B0%D0%BC%D1%8F%D1%82%D1%8C%D1%8E.PNG "=)") <br>
+
+уровняли по памяти разделы <br>
+![22](https://raw.githubusercontent.com/Antieasy/labs/master/lab2/img/28_%20%D0%A3%D1%80%D0%B0%D0%B2%D0%BD%D1%8F%D0%BB%D0%B8%20%D0%BF%D0%BE%20%D0%BF%D0%B0%D0%BC%D1%8F%D1%82%D0%B8%20%D1%80%D0%B0%D0%B7%D0%B4%D0%B5%D0%BB%D1%8B.PNG "=)") <br>
+
+Заметим, что размеры sda2 > raid. Уровняем это. <br>
+``mdadm --grow /dev/md127 --size=max`` <br>
+
+![23](https://raw.githubusercontent.com/Antieasy/labs/master/lab2/img/29_%20%D0%A3%D0%B2%D0%B5%D0%BB%D0%B8%D1%87%D0%B8%20%D1%80%D0%B0%D0%B7%D0%BC%D0%B5%D1%80%20Raid%20na%20max.PNG "=)") <br>
+
+Однако, хоть мы и изменили размер raid, сами размеры vg root,var,log не изменились. Исправим это. <br>
+
+![24](https://raw.githubusercontent.com/Antieasy/labs/master/lab2/img/30_%D1%80%D0%B0%D1%81%D1%88%D1%80%D0%B8%D0%BB%D0%B8%20%D1%80%D0%B0%D0%B7%D0%BC%D0%B5%D1%80%20%D0%BD%D0%B0%D1%88%D0%B5%D0%B3%D0%BE%20PV.PNG "=)") <br>
+
+Добавим вновь появившееся место VG var,root <br>
+
+![25](https://raw.githubusercontent.com/Antieasy/labs/master/lab2/img/31_18%20%D0%B7%D0%B0%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5.PNG "=)") <br>
+
+На этом этапе у нас есть два одинаковых ssd на 10 гб и мы завершили их настройку. Теперь нужно настроить hdd, ведь по ТЗ там мы должны хранить логи, а сейчас мы их храним на ssd.<br>
+
+Создадим raid массив ``mdadm --create /dev/md125 --level=1 --raid-devices=2 /dev/sdc /dev/sdd``, создадим физический том на raid md125 ``pvcreate data /dev/md125``.В этом физическом томе создадим логический группу с названием data ``vgcreate data /dev/md125``, далее логический том ``lvcreate -l 100%FREE -n var_log data``, и форматируем созданый раздел в файловую систему (ext4). В итоге получается следующие: <br>
+![26](https://raw.githubusercontent.com/Antieasy/labs/master/lab2/img/32_%D0%BA%D0%BE%D0%BD%D0%B5%D1%86%2019%D0%B3%D0%BE%20%D0%B7%D0%B0%D0%B4%D0%B0%D0%BD%D0%B8%D1%8F.PNG "+") <br>
+
+Перемонтируем логи и переместим их на hdd <br>
+![27](https://raw.githubusercontent.com/Antieasy/labs/master/lab2/img/33_%20%D0%BF%D0%B5%D1%80%D0%B5%D0%BC%D0%B5%D1%81%D1%82%D0%B8%D0%BB%D0%B8%20%D0%BD%D0%B0%D1%88%D0%B8%20%D0%BB%D0%BE%D0%B3%D0%B8%20%D0%BD%D0%B0%20hdd.PNG "=)") <br>
+
+изменяем fstab <br>
+![28](https://raw.githubusercontent.com/Antieasy/labs/master/lab2/img/34_%20%D0%B8%D0%B7%D0%BC%D0%B5%D0%BD%D0%B8%D0%BB%D0%B8%20%D1%82%D0%BE%D1%87%D0%BA%D1%83%20%D0%BC%D0%BE%D0%BD%D1%82%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D1%8F%20%D0%BB%D0%BE%D0%B3%D0%BE%D0%B2.PNG "0") <br>
+Ну и сняли последние pvs, lvs и vgs показания: <br>
+![29](https://raw.githubusercontent.com/Antieasy/labs/master/lab2/img/35_%D0%BF%D0%BE%D1%81%D0%BB%D0%B5%D0%B4%D0%BD%D0%B8%D0%B5%20%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D0%B5.PNG "9") <br>
+Полная информация о дисках
+![30](https://github.com/Antieasy/labs/blob/master/lab2/img/36_lsblk.PNG) <br>
+![31](https://raw.githubusercontent.com/Antieasy/labs/master/lab2/img/37_%20%D0%BA%D0%BE%D0%BD%D0%B5%D1%86.PNG)<br>
