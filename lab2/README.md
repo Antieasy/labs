@@ -78,5 +78,5 @@ Cкопировали таблицу разделов со старого дис
 
 ![12](https://raw.githubusercontent.com/Antieasy/labs/master/lab2/img/15.PNG "copy table") <br>
 Скопировали /boot, установили grup и выполнили перезагрузку виртуальной машины. <br>
-В итоге все было успешно восстановлено.
+В итоге все было успешно восстановлено. <br>
 ![13](https://raw.githubusercontent.com/Antieasy/labs/master/lab2/img/17.PNG "finish task 2") <br>
