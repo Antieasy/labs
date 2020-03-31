@@ -93,10 +93,27 @@ Cкопировали таблицу разделов со старого дис
 
 ``mdadm --create --verbose /dev/md63 --force --level=1 --raid-devices=1 /dev/sdb2`` - создали новый raid массив с включением туда только одного ssd. <br>
 
-![15](https://raw.githubusercontent.com/Antieasy/labs/master/lab2/img/21_md63.PNG "set a raid") <br>
+![16](https://raw.githubusercontent.com/Antieasy/labs/master/lab2/img/21_md63.PNG "set a raid") <br>
 
-Далее нам нужно настроить LVM. <br>
+Далее нам нужно настроить LVM. Для этого мы создали новый физический том включив в него ранее созданый RAID <br>
 
-![15](https://raw.githubusercontent.com/Antieasy/labs/master/lab2/img/22_pvcreate%20md63.PNG "setting LVM") <br>
+![17](https://raw.githubusercontent.com/Antieasy/labs/master/lab2/img/22_pvcreate%20md63.PNG "setting LVM") <br>
+
+Но это еще не все. Нужно увеличить размер VG, делаем это командой ``vgextend system /dev/md63`` <br>
+Потом с помощью ``pvmove -i 10 -n /dev/system/*** /dev/md0 /dev/md63`` переместили данные со старого диска на новый. <br>
+Вот что получилось <br>
+Затем, изменим VG удалив от туда raid старого диска ``vgreduce system /dev/md0`` <br>
+
+![18](https://raw.githubusercontent.com/Antieasy/labs/master/lab2/img/24_%20removed%20system.PNG "lsblk") <br>
+
+Удалили ssd3, создали ssd5 (10Gb), добавили 2 hdd(16Gb). <br>
+Опять скопировали таблицу разделов на новый ssd, скопировали /boot, установили grub. <br>
+Затем, как показано на скриншоте ниже, мы не используем свободное пространство наших новых дисков. Изменяем размер второго раздела (ssd5) c помощью ``fdisk /dev/xxx``<br>
+
+![19](https://raw.githubusercontent.com/Antieasy/labs/master/lab2/img/25_%20fdisk.PNG "lsblk and fsdick") <br>
+
+Вот что в итоге получилось - мы увеличили размер sdb2 <br>
+
+![20](https://raw.githubusercontent.com/Antieasy/labs/master/lab2/img/26_%D1%83%D0%B2%D0%B5%D0%BB%D0%B8%D1%87%D0%B8%D0%BB%D0%B8%20%D1%80%D0%B0%D0%B7%D0%BC%D0%B5%D1%80%20%D1%80%D0%B0%D0%B7%D0%B4%D0%B5%D0%BB%D0%B0.PNG "up gb") <br>
 
 
