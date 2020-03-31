@@ -68,3 +68,14 @@ lsblk <br>
 
 ![10](https://raw.githubusercontent.com/Antieasy/labs/master/lab2/img/13.PNG "VM") <br>
 
+С помощью команды ``fdisk -l`` убедились, что диск был успешно добавлен. <br>
+
+![11](https://raw.githubusercontent.com/Antieasy/labs/master/lab2/img/14.PNG "fdisk") <br>
+
+Cкопировали таблицу разделов со старого диска на новый с помощью ``sfdisk -d /dev/sda | sfdisk /dev/sdb`` <br>
+и добавили raid в sdb2 c помощью команды ``mdadm --manage /dev/md0 --add /dev/sdb2`` <br>
+
+![12](https://raw.githubusercontent.com/Antieasy/labs/master/lab2/img/15.PNG "copy table") <br>
+Скопировали /boot, установили grup и выполнили перезагрузку виртуальной машины. <br>
+В итоге все было успешно восстановлено.
+![13](https://raw.githubusercontent.com/Antieasy/labs/master/lab2/img/17.PNG "finish task 2") <br>
