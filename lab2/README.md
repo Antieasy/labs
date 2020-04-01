@@ -97,7 +97,7 @@ Cкопировали таблицу разделов со старого дис
 
 ![16](https://raw.githubusercontent.com/Antieasy/labs/master/lab2/img/21_md63.PNG "set a raid") <br>
 
-Далее нам нужно настроить LVM. Для этого мы создали новый физический том, включив в него ранее созданый RAID <br>
+Далее нам нужно настроить LVM. Для этого мы создали новый физический том, включив в него ранее созданый RAID.<br>
 
 ![17](https://raw.githubusercontent.com/Antieasy/labs/master/lab2/img/22_pvcreate%20md63.PNG "setting LVM") <br>
 
