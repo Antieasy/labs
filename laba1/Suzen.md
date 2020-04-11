@@ -46,7 +46,7 @@ YW1pZWhpaW0yb2h5NW9vRjZlaXcK<br>
 ls <br>
 aWU0b29XdWxlaXBodXBpZWZveW8K<br>
 **22 zadanie**<br>
-# i=1; while [ $i -lt 999 ];do touch $i.txt;let i++;done;<br>
+i=1; while [ $i -lt 999 ];do touch $i.txt;let i++;done;<br>
 touch - создает файл, let i++ увеличивает счетчик на единицу. -lt == <;<br>
 aTc1Z3g3aVNvYk9CZmd6ZWF5TXh4WFBXNUJ3UG94aXBkMjYvekl0QWRWbz0K<br>
 
@@ -144,7 +144,7 @@ dGVlMUtleThhUXVvaDFnZTFiaWkK<br>
 
 Вставляем весь этот текст, кроме последней строчки.<br>
 cat >diary <<end<br>
-далее через echo '11:32pm: Нассал под кресло. Еееееееее!' >> diary <br>
+далее через echo -n '11:32pm: Нассал под кресло. Еееееееее!' >> diary <br>
 ZWV4b1g1WnVkMm9oZnVjYWhkdTMK
 **29 zadanie** <br>
 Нужно узнать историю, для этого нажимаем стрелочку вверх и ищем флаг. 
